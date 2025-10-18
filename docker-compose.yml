@@ -1,0 +1,12 @@
+services:
+  holiday-party-nextjs:
+    build: .
+    ports:
+      - "4444:4444"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=4444
+    command: npm run dev
