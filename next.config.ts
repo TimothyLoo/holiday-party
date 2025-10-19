@@ -1,6 +1,6 @@
 import { NextConfig } from "next";
 
-const isGitHubPages = process.env.DEPLOY_ENV === "GH_PAGES";
+// const isGitHubPages = process.env.DEPLOY_ENV === "GH_PAGES";
 const repoName = "holiday-party";
 
 const nextConfig: NextConfig = {
@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
   output: "export",
 
   // Base path and asset prefix for GitHub Pages
-  basePath: isGitHubPages ? `/${repoName}` : "",
-  assetPrefix: isGitHubPages ? `/${repoName}/` : "",
+  basePath: `/${repoName}`,
+  assetPrefix: `/${repoName}/`,
 
   // React strict mode
   reactStrictMode: true,
