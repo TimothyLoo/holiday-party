@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@yudiel/react-qr-scanner": "^2.3.1",
     "next": "15.5.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

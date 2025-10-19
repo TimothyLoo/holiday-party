@@ -78,8 +78,51 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: transform 0.2s;
 }
 
 .button:hover {
   background-color: #005bb5;
+  transform: scale(1.05);
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* 50% transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qrScanner {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 400px;
+  border: 2px dashed var(--primary);
+  border-radius: 12px;
+  padding: 0.5rem;
 }

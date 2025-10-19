@@ -1,20 +1,17 @@
 /* Variables for light and dark mode */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-
-  /* Optional accent colors */
-  --primary: #1d4ed8;
-  --secondary: #2563eb;
+  --foreground: #111111;
+  --primary: #005daa; /* Costco blue */
+  --secondary: #e31837; /* Costco red */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #1a1a1a;
     --foreground: #ededed;
-
-    --primary: #3b82f6;
-    --secondary: #60a5fa;
+    --primary: #005daa;
+    --secondary: #e31837;
   }
 }
 
@@ -27,17 +24,19 @@
   padding: 0;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--foreground);
   background: var(--background);
   line-height: 1.5;
 
-  /* Center everything */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -59,13 +58,22 @@ a {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 1rem; /* spacing between children */
+  gap: 1rem;
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family:
+    "Bebas Neue", "Helvetica Neue", Helvetica, Arial, sans-serif; /* blocky Costco-style */
+  font-weight: 700;
+  color: var(--primary);
   line-height: 1.2;
+  text-transform: uppercase;
 }
 
 p {
@@ -73,20 +81,18 @@ p {
 }
 
 /* Responsive container widths - mobile first */
-@media (min-width: 640px) { /* sm */
+@media (min-width: 640px) {
   .container {
     max-width: 640px;
     padding: 2rem;
   }
 }
-
-@media (min-width: 768px) { /* md */
+@media (min-width: 768px) {
   .container {
     max-width: 768px;
   }
 }
-
-@media (min-width: 1024px) { /* lg */
+@media (min-width: 1024px) {
   .container {
     max-width: 1024px;
   }
