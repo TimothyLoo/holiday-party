@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 16px;
   min-height: 100vh;
   padding: 32px;
   text-align: center;
@@ -14,19 +14,13 @@
   font-weight: 600;
 }
 
-.ctas {
-  display: flex;
-  flex-direction: column; /* stacked on mobile */
-  gap: 16px;
-  width: 100%;
-  max-width: 400px;
+.description {
+  font-size: 1rem;
+  max-width: 500px;
 }
 
-/* Buttons */
 .button {
-  display: block;
-  width: 100%;
-  padding: 12px 20px;
+  padding: 12px 24px;
   border-radius: 8px;
   background-color: #2563eb;
   color: #fff;
@@ -37,17 +31,4 @@
 
 .button:hover {
   background-color: #1d4ed8;
-}
-
-/* Horizontal row for larger screens */
-@media (min-width: 640px) {
-  .ctas {
-    flex-direction: row;
-    justify-content: center;
-  }
-
-  .button {
-    width: auto;
-    min-width: 120px;
-  }
 }
