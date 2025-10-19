@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
+import { useLiveQuery } from "dexie-react-hooks";
 import styles from "./page.module.css";
 import { db, addMember, createGame, assignMember, getMembersForGame } from "../../../lib/db";
 
@@ -10,58 +11,34 @@ interface GameClientProps {
   id: string;
 }
 
-interface AssignmentWithName {
-  id: string;
-  gameId: string;
-  memberId: string;
-  name: string;
-  team: string;
-  status: "naughty" | "nice";
-}
-
 export default function GameClient({ id }: GameClientProps) {
   const [scanOpen, setScanOpen] = useState(false);
-  const [qrResult, setQrResult] = useState("");
-  const [assignments, setAssignments] = useState<AssignmentWithName[]>([]);
-  const [banner, setBanner] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [banner, setBanner] = useState<{ message: string; color: string } | null>(null);
 
   const gameId = `game-${id}`;
 
-  // helper to show banner for 5 seconds
-  const showBanner = (message: string, type: "success" | "error" = "success") => {
-    setBanner({ message, type });
-    setTimeout(() => setBanner(null), 5000);
-  };
-
-  // Initialize game and load assignments
+  // Initialize game on load
   useEffect(() => {
     const init = async () => {
-      let game = await db.games.get(gameId);
+      const game = await db.games.get(gameId);
       if (!game) await createGame(`Game ${id}`, new Date().toISOString());
-
-      const current = await getMembersForGame(gameId);
-      setAssignments(current);
     };
     init();
-  }, [gameId]);
+  }, [gameId, id]);
 
-  // Subscribe to Dexie updates
-  useEffect(() => {
-    const table = db.assignments;
+  // Reactively get all assignments
+  const assignments = useLiveQuery(
+    async () => {
+      return (await getMembersForGame(gameId)) ?? [];
+    },
+    [gameId],
+    []
+  );
 
-    const handleChanges = async () => {
-      const current = await getMembersForGame(gameId);
-      setAssignments(current);
-    };
-
-    table.hook("creating", handleChanges);
-    table.hook("updating", handleChanges);
-
-    return () => {
-      table.hook("creating").unsubscribe(handleChanges);
-      table.hook("updating").unsubscribe(handleChanges);
-    };
-  }, [gameId]);
+  const showBanner = (message: string, color: string = "#005DAA") => {
+    setBanner({ message, color });
+    setTimeout(() => setBanner(null), 5000);
+  };
 
   const parseMemberFromUrl = (url: string) => {
     try {
@@ -75,74 +52,69 @@ export default function GameClient({ id }: GameClientProps) {
   const handleScan = async (result: IDetectedBarcode[]) => {
     if (!result.length) return;
     const scannedUrl = result[0].rawValue;
-    setQrResult(scannedUrl);
-
     const memberName = parseMemberFromUrl(scannedUrl);
+
     if (!memberName) {
-      showBanner("❌ No member found in QR code!", "error");
+      showBanner("No member found in QR code!", "#E31837");
       setScanOpen(false);
       return;
     }
 
     setScanOpen(false);
 
-    let members = await db.members.where("name").equals(memberName).toArray();
-    let memberId: string;
-    if (members.length === 0) {
-      memberId = await addMember(memberName);
-    } else {
-      memberId = members[0].id;
-    }
+    // Ensure member exists
+    const member = await db.members.where("name").equals(memberName).first();
+    const memberId = member ? member.id : await addMember(memberName);
 
-    if (assignments.find((a) => a.memberId === memberId)) {
-      showBanner(`⚠️ ${memberName} already checked in!`, "error");
+    // Check if already assigned
+    const alreadyAssigned = assignments?.find((a) => a.memberId === memberId);
+    if (alreadyAssigned) {
+      showBanner(`${memberName} has already checked in!`, "#E31837");
       return;
     }
 
-    const team1Count = assignments.filter((a) => a.team === "Team 1").length;
-    const team2Count = assignments.filter((a) => a.team === "Team 2").length;
+    // Assign team (balance)
+    const team1Count = assignments?.filter((a) => a.team === "Team 1").length ?? 0;
+    const team2Count = assignments?.filter((a) => a.team === "Team 2").length ?? 0;
     const assignedTeam = team1Count <= team2Count ? "Team 1" : "Team 2";
 
-    // Randomly assign naughty or nice
+    // Random naughty/nice
     const status = Math.random() < 0.5 ? "naughty" : "nice";
 
+    // Save
     await assignMember(gameId, memberId, assignedTeam, status);
 
-    showBanner(`🎉 ${memberName} clocked in: ${assignedTeam}, ${status.toUpperCase()} list!`);
-
-    const updatedAssignments = await getMembersForGame(gameId);
-    const half = Math.ceil(updatedAssignments.length / 2);
-    const shuffled = [...updatedAssignments].sort(() => Math.random() - 0.5);
-
-    for (let i = 0; i < shuffled.length; i++) {
-      const a = shuffled[i];
-      const newTeam = i < half ? "Team 1" : "Team 2";
-      if (a.team !== newTeam) {
-        await db.assignments.update(a.id, { team: newTeam });
-      }
-    }
-
-    const refreshed = await getMembersForGame(gameId);
-    setAssignments(refreshed);
+    // Success banner
+    showBanner(
+      `${memberName} joined ${assignedTeam} — ${status === "naughty" ? "😈 Naughty!" : "🎅 Nice!"}`,
+      status === "naughty" ? "#E31837" : "#007A33"
+    );
   };
 
-  const handleError = (err: any) => {
+  const handleError = (err: unknown) => {
     console.error(err);
-    showBanner("🚫 Oops! Something went wrong with the camera.", "error");
+    showBanner("Oops! Something went wrong with the camera.", "#E31837");
   };
 
-  const membersByTeam = (team: string) => assignments.filter((a) => a.team === team);
+  const membersByTeam = (team: string) => assignments?.filter((a) => a.team === team) ?? [];
+
   const membersByStatus = (status: "naughty" | "nice") =>
-    assignments.filter((a) => a.status === status);
+    assignments?.filter((a) => a.status === status) ?? [];
 
   return (
     <div className={styles.page}>
-      {/* 🔔 Notification Banner */}
       {banner && (
         <div
-          className={`${styles.banner} ${
-            banner.type === "error" ? styles.bannerError : styles.bannerSuccess
-          }`}
+          className={styles.banner}
+          style={{
+            backgroundColor: banner.color,
+            color: "#fff",
+            padding: "12px",
+            borderRadius: "8px",
+            textAlign: "center",
+            marginBottom: "10px",
+            fontWeight: 600,
+          }}
         >
           {banner.message}
         </div>

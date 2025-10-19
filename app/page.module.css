@@ -24,6 +24,7 @@
 
 /* Buttons */
 .button {
+  font-family: var(--font-geist-sans);
   display: block;
   width: 100%;
   text-align: center;

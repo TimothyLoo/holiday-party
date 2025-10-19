@@ -32,7 +32,7 @@ export class HolidayGameDB extends Dexie {
     this.version(1).stores({
       members: "id,name",
       games: "id,date,name",
-      assignments: "id,gameId,memberId,[gameId+team],[gameId+status]"
+      assignments: "id,gameId,memberId,[gameId+team],[gameId+status]",
     });
   }
 }
