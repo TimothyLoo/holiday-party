@@ -1,0 +1,32 @@
+{
+  "name": "Next.js Holiday Party Dev Container",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "holiday-party-nextjs",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "eslint.enable": true,
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "git.enabled": true
+      }
+      // "extensions": [
+      //   "github.vscode-pull-request-github",
+      //   "eamodio.gitlens"
+      // ]
+    }
+  },
+  "forwardPorts": [4444],
+  "remoteUser": "root"
+  //   "mounts": [
+  //   "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind",
+  //   "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind"
+  // ],
+  // "features": {
+  //   "ghcr.io/devcontainers/features/git:1": {
+  //     "version": "1",
+  //     "ppa": false
+  //   }
+  // }
+}
