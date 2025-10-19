@@ -9,7 +9,7 @@ export default function HomePage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Welcome! Choose a game:</h1>
+      <h1 className={styles.title}>WhaleCum! Choose a game:</h1>
       <div className={styles.ctas}>
         {games.map((game) => (
           <Link key={game} href={`/game/${game}`}>
