@@ -1,5 +1,6 @@
 import React from "react";
 import GameClient from "./GameClient";
+import Head from "next/head";
 
 interface GamePageProps {
   params: { id: string };
@@ -11,5 +12,13 @@ export function generateStaticParams() {
 }
 
 export default function GamePage({ params }: GamePageProps) {
-  return <GameClient id={params.id} />;
+  return (
+    <>
+      <Head>
+        <title>Game 1 - Holiday Party</title>
+        <meta name="description" content="Holiday games at Costco" />
+      </Head>
+      <GameClient id={params.id} />
+    </>
+  );
 }

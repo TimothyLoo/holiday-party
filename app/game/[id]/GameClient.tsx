@@ -14,7 +14,7 @@ export default function GameClient({ id }: GameClientProps) {
   const [qrResult, setQrResult] = useState("");
 
   const handleScan = (result: IDetectedBarcode[]) => {
-    console.log(result);
+    console.log(result[0].rawValue);
     setScanOpen(false);
     alert(`Clocked in! You scanned: ${result.map((r) => r.rawValue).join(", ")}`);
   };
