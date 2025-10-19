@@ -29,7 +29,7 @@ body {
   width: 100%;
   height: 100%;
 
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif, var(--geist-sans), var(--geist-mono);
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
